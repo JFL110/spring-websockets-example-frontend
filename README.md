@@ -10,6 +10,7 @@ More details can be found on the [back end repo](https://github.com/JFL110/sprin
 ## How to use
 - Navigate to the site at ```d1kzdlgex69htr.cloudfront.net/{your-canvas-name} ```.
 - Navigating to  ```/random``` will select a random canvas name.
+- Double tapping the bin icon to clear the canvas.
 - Navigate to the same address on another device or browser window.
 - See changes to the canvas made in (hopefully) lightning fast real-time.
 
