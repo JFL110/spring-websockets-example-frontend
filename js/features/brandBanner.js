@@ -1,5 +1,5 @@
 import React from 'react'
 
 export default () => <div className="brand-banner">
-    <a href="https://www.jamesleach.dev">jamesleach.dev</a>
+    <a className="noselect" href="https://www.jamesleach.dev">jamesleach.dev</a>
 </div>
