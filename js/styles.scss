@@ -6,11 +6,13 @@ $border-radius: 5px;
 $small-screen: 800px;
 $small-screen-reduction: 1.9;
 $min-inner-width: 3.3 + 4 * $control-button-height / $small-screen-reduction + 7em;
+$max-canvas-width: 1000px;
 
 .canvas-container {
+	$h: $main-top-margin * 2 + $control-button-height + $canvas-top-margin;
 	margin-top: $canvas-top-margin;
 	position: relative;
-	max-height: calc(100vh - #{$main-top-margin * 2 + $control-button-height + $canvas-top-margin});
+	max-height: calc(100vh - #{$h});
 	max-width: calc(100vw - #{$main-margin * 2});
 	min-width: $min-inner-width;
 	overflow: hidden;
@@ -52,6 +54,31 @@ $min-inner-width: 3.3 + 4 * $control-button-height / $small-screen-reduction + 7
 			background: rgb(157, 157, 157);
 		}
 	}
+	.brand-banner {
+		$banner-height: 2em;
+		position: absolute;
+		left: 0;
+		height: $banner-height;
+		line-height: $banner-height;
+		top: calc(100vh - #{$h + $banner-height});
+		z-index: 150;
+		padding-left: 1em;
+		padding-right: 1em;
+		background-color: #111;
+		border-top-right-radius: 20px;
+
+		a {
+			color: white;
+			text-decoration: none;
+
+			&:hover {
+				text-decoration: underline;
+			}
+			&:active {
+				text-decoration: underline;
+			}
+		}
+	}
 }
 
 .canvas-app {
@@ -85,17 +112,74 @@ $min-inner-width: 3.3 + 4 * $control-button-height / $small-screen-reduction + 7
 }
 
 @mixin button-height {
-	cursor: pointer;
 	display: inline-block;
 	height: $control-button-height;
+	line-height: $control-button-height;
 
 	@media (max-width: $small-screen) {
 		height: $control-button-height / $small-screen-reduction;
+		line-height: $control-button-height / $small-screen-reduction;
+	}
+}
+
+.canvas-name {
+	@media (max-width: 375px) {
+		display: none;
+	}
+
+	@include button-height;
+	position: relative;
+	background-color: white;
+	border-radius: $border-radius;
+	margin-left: 2em;
+	width: calc(100vw - #{$main-margin * 2 + 4 * $control-button-height + 10em + 7em});
+	max-width: calc(#{$max-canvas-width} - #{$main-margin * 2 + 4 * $control-button-height + 10em + 6em});
+	overflow: hidden;
+	@media (max-width: $small-screen) {
+		margin-left: 1em;
+		width: calc(100vw - #{$main-margin * 2 + 4 * $control-button-height / $small-screen-reduction + 4.5em + 7em});
+	}
+
+	&:hover {
+		input {
+			border-bottom: 2px solid rgba(10, 10, 10, 0.2);
+		}
+	}
+
+	.go-button {
+		cursor: pointer;
+		margin-left: 0.3em;
+	}
+
+	input {
+		width: calc(100% - 3em);
+		margin-left: 1em;
+		@media (max-width: $small-screen) {
+			width: calc(100% - 2em);
+			margin-left: 0.5em;
+		}
+
+		//
+		border: 0;
+		outline: 0;
+		color: #111;
+		background: transparent;
+		transition: border-color 0.2s;
+		font-size: 1em;
+
+		&:placeholder {
+			color: transparent;
+		}
+
+		&:focus {
+			border-bottom: 2px solid rgba(10, 10, 10, 0.4);
+		}
 	}
 }
 
 .color-picker-container {
 	@include button-height;
+	cursor: pointer;
 	position: relative;
 
 	.color-swatch {
@@ -128,6 +212,7 @@ $min-inner-width: 3.3 + 4 * $control-button-height / $small-screen-reduction + 7
 
 .square-button {
 	@include button-height;
+	cursor: pointer;
 	width: $control-button-height;
 	background-color: white;
 	border-radius: $border-radius;
@@ -138,7 +223,6 @@ $min-inner-width: 3.3 + 4 * $control-button-height / $small-screen-reduction + 7
 	@media (max-width: $small-screen) {
 		margin-left: 1em;
 		width: $control-button-height / $small-screen-reduction;
-		line-height: $control-button-height / $small-screen-reduction;
 	}
 }
 

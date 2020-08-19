@@ -2,11 +2,9 @@ import SockJS from 'sockjs-client'
 import Frame from './frame'
 import canvasSlice from './canvasSlice'
 import Stomp from 'stompjs'
-
+import config from './config'
 const initCheckInterval = 500;
 
-const urlBase = "http://springwebsocketsexample2-env.eba-9wepzsai.eu-west-2.elasticbeanstalk.com";
-//const urlBase = "http://localhost:8080";
 
 const lineDest = "/app/canvas/line/";
 const clearDest = "/app/canvas/clear/";
@@ -141,7 +139,7 @@ const processLinesMessage = msg => {
         if (line) {
             line.isFinished = true;
         }
-        console.log("finished", msg);
+        console.log("Got line finished");
     }
     triggerLinesChangedCallback(false);
 }
@@ -157,7 +155,7 @@ const triggerLinesChangedCallback = (clearing) => linesUpdatedCallback && linesU
 const connect = (_canvasId) => {
     canvasId = _canvasId;
     console.log("Attempting to connect...");
-    var socket = new SockJS(urlBase + '/canvas');
+    var socket = new SockJS(config.backUrl + '/canvas');
     stompClient = Stomp.over(socket);
     stompClient.debug = false;
     stompClient.connect({},

@@ -6,6 +6,8 @@ import BrushRadiusPicker from './brushRadiusPicker'
 import ClearButton from './clearButton'
 import brushSlice from './brushSlice'
 import canvasSlice from './canvasSlice'
+import BrandBanner from './brandBanner'
+import CanvasName from './canvasName'
 import { sendStartLine, sendLinePoints, sendFinishLine, setOnLinesUpdatedCallback } from './canvasSocket'
 
 // Canvas state
@@ -141,7 +143,7 @@ setOnLinesUpdatedCallback(
             return;
 
         if (clearing) {
-            console.log("clearing");
+            console.log("Clearing the canvas");
             resetRemoteCanvasState();
             readOnlyCanvasRef.clear();
         }
@@ -262,6 +264,7 @@ export default
                     <div className="controls-bar">
                         <ColorPicker />
                         <BrushRadiusPicker />
+                        <CanvasName />
                         <ClearButton />
                     </div>
                     <div
@@ -293,6 +296,7 @@ export default
                             canvasHeight={height}
                             ref={cd => readOnlyCanvasRef = cd}
                         />
+                        <BrandBanner />
                     </div>
                 </div>
             }));

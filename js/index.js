@@ -5,7 +5,6 @@ import { combineReducers } from 'redux'
 import { configureStore, getDefaultMiddleware } from '@reduxjs/toolkit'
 import { Provider } from 'react-redux'
 import App from './app'
-// import loggingMiddleware from './features/loggingMiddleware'
 import { getStore, setStore } from './features/globalStore'
 import { routerMiddleware, connectRouter, ConnectedRouter } from 'connected-react-router'
 import { createBrowserHistory } from 'history'
@@ -16,6 +15,7 @@ import brushSlice from './features/brushSlice'
 
 import './styles.scss'
 
+console.log("Thanks for taking a look at this websockets demo app. Head to https://jamesleach.dev for contact information or view the source for this app at https://github.com/JFL110/spring-websockets-example-frontend")
 
 // Queue rendering until after all resources (css) have loaded, or after one second
 setLoaded(() => {
