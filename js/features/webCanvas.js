@@ -29,6 +29,7 @@ const resetRemoteCanvasState = () => {
 // Keep track of references to canvases. Not using React/Redux to manage state due to frequent big updates.
 var readOnlyCanvasRef;
 var canvasRef;
+var remoteSyncDelayHandle;
 
 /**
  * Send update message for new line points
@@ -133,6 +134,8 @@ const syncMyLines = () => {
     } catch (err) {
         console.log("swallowing", err);
     }
+
+    remoteSyncDelayHandle = null;
 }
 
 /**
@@ -242,7 +245,10 @@ setOnLinesUpdatedCallback(
 
         // Sync up remoteLines
         canvasState.remoteLines = [...Object.values(allLines.lines)];
-        syncMyLines();
+
+        if (!remoteSyncDelayHandle) {
+            remoteSyncDelayHandle = setTimeout(syncMyLines, 100);
+        }
     });
 
 
