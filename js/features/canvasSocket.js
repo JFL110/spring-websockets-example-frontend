@@ -202,8 +202,8 @@ const connect = (_canvasId) => {
                             allLines.highestLineNumbers[l.d] = l.f ? l.n + 1 : l.n;
                         }
                     });
-                    Frame.dispatch(canvasSlice.actions.setReady(true));
                 triggerLinesChangedCallback(true);
+                Frame.dispatch(canvasSlice.actions.setReady(true));
             });
 
             // Queue another init attempt

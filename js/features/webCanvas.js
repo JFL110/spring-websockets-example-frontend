@@ -100,7 +100,7 @@ const syncMyLines = () => {
 
     // Loop through myLines and remove any that are finished and have been totally remotely received
     const linesToDraw = [];
-    var changesMade = false;
+    const indexesToDelete = []
     for (const n of [...Object.keys(canvasState.myLines)]) {
         const line = canvasState.myLines[n];
         if (n < canvasState.lineNumber) { // Line is finished
@@ -111,8 +111,7 @@ const syncMyLines = () => {
                 // ... or has enough points and is two lines behind our current line number
                 || (remoteLine.points.length >= line.points.length && remoteLine.userNumber + 2 <= canvasState.lineNumber))) {
                 // Line has been totally received
-                delete canvasState.myLines[n];
-                changesMade = true;
+                indexesToDelete.push(n);
                 continue;
             }
         }
@@ -123,8 +122,10 @@ const syncMyLines = () => {
         }
     }
 
+    indexesToDelete.forEach(n => delete canvasState.myLines[n]);
+
     try {
-        changesMade && canvasRef && canvasRef.loadSaveData(JSON.stringify({
+        indexesToDelete.length > 0 && canvasRef && canvasRef.loadSaveData(JSON.stringify({
             lines: linesToDraw,
             width: width * 2,
             height: height * 2
@@ -160,7 +161,7 @@ setOnLinesUpdatedCallback(
                     width: width,
                     height: height
                 })
-                , true);
+                , false);
             canvasState.highestLineNumbers = { ...allLines.highestLineNumbers };
         } else {
             const newHighestLineNumbers = {};
@@ -279,12 +280,13 @@ export default
                             immediateLoading={true}
                             loadTimeOffset={0}
                             ref={cd => canvasRef = cd}
-                            onChange={finishLineInProgress}
                             gridColor={"rgba(0,0,0,0)"}
                             canvasWidth={width}
                             canvasHeight={height}
                             hideGrid
                             disabled={!ready}
+                            hideInterface={!ready}
+                            onChange={ready ? finishLineInProgress : () => {}}
                         />
                         <CanvasDraw
                             className="others-canvas"
