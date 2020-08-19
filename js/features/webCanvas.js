@@ -5,6 +5,7 @@ import ColorPicker from './colorPicker'
 import BrushRadiusPicker from './brushRadiusPicker'
 import ClearButton from './clearButton'
 import brushSlice from './brushSlice'
+import canvasSlice from './canvasSlice'
 import { sendStartLine, sendLinePoints, sendFinishLine, setOnLinesUpdatedCallback } from './canvasSocket'
 
 // Canvas state
@@ -146,8 +147,6 @@ setOnLinesUpdatedCallback(
         }
 
         if (Object.keys(canvasState.remoteLines).length == 0) {
-            console.log("Initial draw")
-
             const sortedLines = [...Object.values(allLines.lines)]
                 .filter(l => l.points.length > 2)
                 .sort((a, b) => (a.z ?? 0) - (b.z ?? 0));
@@ -247,48 +246,53 @@ setOnLinesUpdatedCallback(
 /**
  * Wrap the canvas'
  */
-export default Frame.connectWithSlice(brushSlice,
-    ({ color,
-        radius }) => {
-        const digestCanvas = () => {
-            if (canvasRef?.isDrawing) {
-                reportOnLineInProgress(canvasRef.points, canvasRef.props.brushRadius, canvasRef.props.brushColor, false);
-            }
-        }
+export default
+    Frame.connect(state => ({ ready: state[canvasSlice.name].ready }))(
+        Frame.connectWithSlice(brushSlice,
+            ({ color,
+                ready,
+                radius }) => {
+                const digestCanvas = () => {
+                    if (canvasRef?.isDrawing) {
+                        reportOnLineInProgress(canvasRef.points, canvasRef.props.brushRadius, canvasRef.props.brushColor, false);
+                    }
+                }
 
-        return <div>
-            <div className="controls-bar">
-                <ColorPicker />
-                <BrushRadiusPicker />
-                <ClearButton />
-            </div>
-            <div
-                className="canvas-container"
-                onMouseMove={digestCanvas}
-            >
-                <CanvasDraw
-                    brushColor={color}
-                    brushRadius={radius}
-                    className="user-canvas"
-                    immediateLoading={true}
-                    loadTimeOffset={0}
-                    ref={cd => canvasRef = cd}
-                    onChange={finishLineInProgress}
-                    gridColor={"rgba(0,0,0,0)"}
-                    canvasWidth={width}
-                    canvasHeight={height}
-                    hideGrid
-                />
-                <CanvasDraw
-                    className="others-canvas"
-                    immediateLoading={true}
-                    loadTimeOffset={0}
-                    disabled
-                    hideInterface
-                    canvasWidth={width}
-                    canvasHeight={height}
-                    ref={cd => readOnlyCanvasRef = cd}
-                />
-            </div>
-        </div>
-    });
+                return <div>
+                    <div className="controls-bar">
+                        <ColorPicker />
+                        <BrushRadiusPicker />
+                        <ClearButton />
+                    </div>
+                    <div
+                        className="canvas-container"
+                        onMouseMove={digestCanvas}
+                    >
+                        {!ready && <div className="canvas-disabled-overlay"> <div className="loader" /></div>}
+                        <CanvasDraw
+                            brushColor={color}
+                            brushRadius={radius}
+                            className="user-canvas"
+                            immediateLoading={true}
+                            loadTimeOffset={0}
+                            ref={cd => canvasRef = cd}
+                            onChange={finishLineInProgress}
+                            gridColor={"rgba(0,0,0,0)"}
+                            canvasWidth={width}
+                            canvasHeight={height}
+                            hideGrid
+                            disabled={!ready}
+                        />
+                        <CanvasDraw
+                            className="others-canvas"
+                            immediateLoading={true}
+                            loadTimeOffset={0}
+                            disabled
+                            hideInterface
+                            canvasWidth={width}
+                            canvasHeight={height}
+                            ref={cd => readOnlyCanvasRef = cd}
+                        />
+                    </div>
+                </div>
+            }));

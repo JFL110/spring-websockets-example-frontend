@@ -7,13 +7,12 @@ export default Frame.createSlice({
     name: 'socket',
     initialState: {
         canvasId: null,
-        socketState: {},
+        ready : false,
     },
     reducers: {
         ...Frame.settingReducers({
-            setColor: 'color',
             setCanvasId: 'canvasId',
-            setSocketState: 'socketState',
+            setReady: 'ready',
         }),
     }
 });

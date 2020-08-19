@@ -1,4 +1,6 @@
 import SockJS from 'sockjs-client'
+import Frame from './frame'
+import canvasSlice from './canvasSlice'
 import Stomp from 'stompjs'
 
 const initCheckInterval = 500;
@@ -203,6 +205,7 @@ const connect = (_canvasId) => {
                             allLines.highestLineNumbers[l.d] = l.f ? l.n + 1 : l.n;
                         }
                     });
+                    Frame.dispatch(canvasSlice.actions.setReady(true));
                 triggerLinesChangedCallback(true);
             });
 
@@ -228,9 +231,10 @@ const connect = (_canvasId) => {
             stompClient = null;
             connected = false;
             ownId = null;
+            Frame.dispatch(canvasSlice.actions.setReady(false));
 
             // Queue reconnect attempt
-            var delaySeconds = 2 * failedConnectionAttempts;
+            var delaySeconds = failedConnectionAttempts;
             if (delaySeconds > maxDelaySeconds) {
                 delaySeconds = maxDelaySeconds;
             }
