@@ -6,9 +6,9 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight'
 
 export default Frame.connectWithSlice(canvasSlice,
-    ({ canvasName }) => {
+    ({ canvasId }) => {
 
-        const [text, setText] = useState(canvasName);
+        const [text, setText] = useState(canvasId);
         const stripSlashAndSet = v => {
             setText(v.replace(/^\/+/, ''));
         }
