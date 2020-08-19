@@ -170,7 +170,6 @@ const connect = (_canvasId) => {
             });
 
             stompClient.subscribe('/topic/clear/' + canvasId, () => {
-                console.log("clearing canvas");
                 allLines = {
                     lines: {},
                     highestLineNumbers: {}
