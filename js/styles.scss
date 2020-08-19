@@ -5,7 +5,7 @@ $canvas-top-margin: 1em;
 $border-radius: 5px;
 $small-screen: 800px;
 $small-screen-reduction: 1.9;
-$min-inner-width: 3.3 + 4 * $control-button-height / $small-screen-reduction + 7em;
+$min-inner-width: 4.3 + 5 * $control-button-height / $small-screen-reduction + 7em;
 $max-canvas-width: 1000px;
 
 .canvas-container {
@@ -122,8 +122,55 @@ $max-canvas-width: 1000px;
 	}
 }
 
+$hide-url-width : 425px;
+
+.canvas-name-mobile-button {
+	@media (min-width: $hide-url-width) {
+		display: none !important;
+	}
+}
+
+.mobile-canvas-name-modal {
+	position: fixed;
+	top: 0;
+	left: 0;
+	z-index: 500;
+	width: 100vw;
+	height: 100vh;
+	background-color: rgba(10, 10, 10, 0.5);
+
+	& > div {
+		z-index: 525;
+		position: relative;
+		width: 100vw;
+		height: 100vh;
+		& > div {
+			z-index: 550;
+			background-color: rgba(255, 255, 255, 0.8);
+			width: 60vw;
+			height: 8em;
+			line-height: 8em;
+			display: inline-block;
+			margin: auto;
+			position: absolute;
+			top: 0;
+			left: 0;
+			bottom: 0;
+			right: 0;
+			border-radius: 10px;
+			padding-left: 1em;
+			padding-right: 1em;
+
+			input {
+				width : calc(60vw - 1em);
+				border-bottom: 2px solid rgba(10, 10, 10, 0.2);
+			}
+		}
+	}
+}
+
 .canvas-name {
-	@media (max-width: 375px) {
+	@media (max-width: $hide-url-width) {
 		display: none;
 	}
 
@@ -146,11 +193,6 @@ $max-canvas-width: 1000px;
 		}
 	}
 
-	.go-button {
-		cursor: pointer;
-		margin-left: 0.3em;
-	}
-
 	input {
 		width: calc(100% - 3em);
 		margin-left: 1em;
@@ -158,22 +200,28 @@ $max-canvas-width: 1000px;
 			width: calc(100% - 2em);
 			margin-left: 0.5em;
 		}
+	}
+}
 
-		//
-		border: 0;
-		outline: 0;
-		color: #111;
-		background: transparent;
-		transition: border-color 0.2s;
-		font-size: 1em;
+.go-button {
+	cursor: pointer;
+	margin-left: 0.3em;
+}
 
-		&:placeholder {
-			color: transparent;
-		}
+input {
+	border: 0;
+	outline: 0;
+	color: #111;
+	background: transparent;
+	transition: border-color 0.2s;
+	font-size: 1em;
 
-		&:focus {
-			border-bottom: 2px solid rgba(10, 10, 10, 0.4);
-		}
+	&:placeholder {
+		color: transparent;
+	}
+
+	&:focus {
+		border-bottom: 2px solid rgba(10, 10, 10, 0.4);
 	}
 }
 
@@ -206,7 +254,7 @@ $max-canvas-width: 1000px;
 
 	.color-picker {
 		position: absolute;
-		z-index: 25;
+		z-index: 175;
 	}
 }
 
