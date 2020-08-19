@@ -13,7 +13,7 @@ const RadiusButton =
         isSelected,
         setRadius }) =>
         <div onClick={() => setRadius(radius)}
-            className={"brush-size-button" + (isSelected ? " brush-selected" : "")}
+            className={"brush-size-button square-button" + (isSelected ? " brush-selected" : "")}
         >
             <div style={{
                 width: radiusToPercentage[radius],

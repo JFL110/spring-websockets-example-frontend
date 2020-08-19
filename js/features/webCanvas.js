@@ -3,6 +3,7 @@ import Frame from './frame'
 import CanvasDraw from "react-canvas-draw";
 import ColorPicker from './colorPicker'
 import BrushRadiusPicker from './brushRadiusPicker'
+import ClearButton from './clearButton'
 import brushSlice from './brushSlice'
 import { sendStartLine, sendLinePoints, sendFinishLine, setOnLinesUpdatedCallback } from './canvasSocket'
 
@@ -15,6 +16,11 @@ const canvasState = {
     myLines: {},
     remoteLines: [],
     highestLineNumbers: {}
+}
+const resetRemoteCanvasState = () => {
+    canvasState.remoteLines = [];
+    canvasState.highestLineNumbers = {};
+    canvasState.myLines = {};
 }
 
 // Keep track of references to canvases. Not using React/Redux to manage state due to frequent big updates.
@@ -98,7 +104,7 @@ const syncMyLines = () => {
             const remoteLine = canvasState.remoteLines.find(l => l.isOwn && l.userNumber == n);
             if (remoteLine && (
                 // ... either is marked as finished
-                remoteLine.isFinished 
+                remoteLine.isFinished
                 // ... or has enough points and is two lines behind our current line number
                 || (remoteLine.points.length >= line.points.length && remoteLine.userNumber + 2 <= canvasState.lineNumber))) {
                 // Line has been totally received
@@ -128,107 +134,114 @@ const syncMyLines = () => {
 /**
  * Subscribe to remote changes to lines
  */
-setOnLinesUpdatedCallback(allLines => {
-    if (!readOnlyCanvasRef)
-        return;
+setOnLinesUpdatedCallback(
+    (allLines, clearing) => {
+        if (!readOnlyCanvasRef)
+            return;
 
-    if (Object.keys(canvasState.remoteLines).length == 0) {
-        console.log("Initial draw")
+        if (clearing) {
+            console.log("clearing");
+            resetRemoteCanvasState();
+            readOnlyCanvasRef.clear();
+        }
 
-        const sortedLines = [...Object.values(allLines.lines)]
-            .filter(l => l.points.length > 2)
-            .sort((a, b) => (a.z ?? 0) - (b.z ?? 0));
+        if (Object.keys(canvasState.remoteLines).length == 0) {
+            console.log("Initial draw")
 
-        // Inital draw
-        readOnlyCanvasRef.loadSaveData(
-            JSON.stringify({
-                lines: sortedLines,
-                width: width,
-                height: height
-            })
-            , true);
-        canvasState.highestLineNumbers = { ...allLines.highestLineNumbers };
-    } else {
-        const newHighestLineNumbers = {};
-        const linesToDraw = [];
-        Object.values(allLines.lines)
-            .filter(l => l.points.length > 2)
-            .forEach(l => {
-                const highestLineNumberForUser = canvasState.highestLineNumbers[l.d] ?? -1;
-                if (l.userNumber < highestLineNumberForUser) {
-                    return; // This line has been drawn already
+            const sortedLines = [...Object.values(allLines.lines)]
+                .filter(l => l.points.length > 2)
+                .sort((a, b) => (a.z ?? 0) - (b.z ?? 0));
+
+            // Inital draw
+            readOnlyCanvasRef.loadSaveData(
+                JSON.stringify({
+                    lines: sortedLines,
+                    width: width,
+                    height: height
+                })
+                , true);
+            canvasState.highestLineNumbers = { ...allLines.highestLineNumbers };
+        } else {
+            const newHighestLineNumbers = {};
+            const linesToDraw = [];
+            Object.values(allLines.lines)
+                .filter(l => l.points.length > 2)
+                .forEach(l => {
+                    const highestLineNumberForUser = canvasState.highestLineNumbers[l.d] ?? -1;
+                    if (l.userNumber < highestLineNumberForUser) {
+                        return; // This line has been drawn already
+                    }
+
+                    // Add line
+                    if (!newHighestLineNumbers[l.d] || (l.userNumber > newHighestLineNumbers[l.d])) {
+                        newHighestLineNumbers[l.d] = l.isFinished ? l.userNumber + 1 : l.userNumber;
+                    }
+
+                    if (!(l.isOwn && !l.isFinished)) {// Don't redraw own lines on temp canvas
+                        linesToDraw.push(l);
+                    }
+                });
+
+            if (linesToDraw.length > 0) {
+
+                const mainCanvas = readOnlyCanvasRef.ctx.drawing;
+                const tmpCanvas = readOnlyCanvasRef.ctx.temp;
+
+                tmpCanvas.clearRect(
+                    0,
+                    0,
+                    width,
+                    height
+                );
+
+                linesToDraw.forEach(l => {
+                    const lineFinished = l.isFinished;
+                    const canvas = lineFinished ? mainCanvas : tmpCanvas;
+
+                    // Actual drawing of line - modified from react-canvas-draw/index.js
+                    canvas.lineJoin = "round";
+                    canvas.lineCap = "round";
+                    canvas.strokeStyle = l.brushColor;
+
+                    canvas.lineWidth = l.brushRadius * 2;
+
+                    let p1 = l.points[0];
+                    let p2 = l.points[1];
+
+                    canvas.moveTo(p2.x, p2.y);
+                    canvas.beginPath();
+
+                    for (var i = 1, len = l.points.length; i < len; i++) {
+                        var midPoint = {
+                            x: p1.x + (p2.x - p1.x) / 2,
+                            y: p1.y + (p2.y - p1.y) / 2
+                        };
+                        canvas.quadraticCurveTo(p1.x, p1.y, midPoint.x, midPoint.y);
+                        p1 = l.points[i];
+                        p2 = l.points[i + 1];
+                    }
+                    canvas.lineTo(p1.x, p1.y);
+                    canvas.stroke();
+                });
+
+                // Sync up highestLineNumbers
+                for (var [k, v] of Object.entries(allLines.highestLineNumbers)) {
+                    if (canvasState.highestLineNumbers[k] == null || canvasState.highestLineNumbers[k] < v) {
+                        canvasState.highestLineNumbers[k] = v;
+                    }
                 }
-
-                // Add line
-                if (!newHighestLineNumbers[l.d] || (l.userNumber > newHighestLineNumbers[l.d])) {
-                    newHighestLineNumbers[l.d] = l.isFinished ? l.userNumber + 1 : l.userNumber;
-                }
-
-                if (!(l.isOwn && !l.isFinished)) {// Don't redraw own lines on temp canvas
-                    linesToDraw.push(l);
-                }
-            });
-
-        if (linesToDraw.length > 0) {
-
-            const mainCanvas = readOnlyCanvasRef.ctx.drawing;
-            const tmpCanvas = readOnlyCanvasRef.ctx.temp;
-
-            tmpCanvas.clearRect(
-                0,
-                0,
-                width,
-                height
-            );
-
-            linesToDraw.forEach(l => {
-                const lineFinished = l.isFinished;
-                const canvas = lineFinished ? mainCanvas : tmpCanvas;
-
-                // Actual drawing of line - modified from react-canvas-draw/index.js
-                canvas.lineJoin = "round";
-                canvas.lineCap = "round";
-                canvas.strokeStyle = l.brushColor;
-
-                canvas.lineWidth = l.brushRadius * 2;
-
-                let p1 = l.points[0];
-                let p2 = l.points[1];
-
-                canvas.moveTo(p2.x, p2.y);
-                canvas.beginPath();
-
-                for (var i = 1, len = l.points.length; i < len; i++) {
-                    var midPoint = {
-                        x: p1.x + (p2.x - p1.x) / 2,
-                        y: p1.y + (p2.y - p1.y) / 2
-                    };
-                    canvas.quadraticCurveTo(p1.x, p1.y, midPoint.x, midPoint.y);
-                    p1 = l.points[i];
-                    p2 = l.points[i + 1];
-                }
-                canvas.lineTo(p1.x, p1.y);
-                canvas.stroke();
-            });
-
-            // Sync up highestLineNumbers
-            for (var [k, v] of Object.entries(allLines.highestLineNumbers)) {
-                if (canvasState.highestLineNumbers[k] == null || canvasState.highestLineNumbers[k] < v) {
-                    canvasState.highestLineNumbers[k] = v;
-                }
-            }
-            for (var [k1, v1] of Object.entries(newHighestLineNumbers)) {
-                if (canvasState.highestLineNumbers[k1] == null || canvasState.highestLineNumbers[k1] < v1) {
-                    canvasState.highestLineNumbers[k1] = v1;
+                for (var [k1, v1] of Object.entries(newHighestLineNumbers)) {
+                    if (canvasState.highestLineNumbers[k1] == null || canvasState.highestLineNumbers[k1] < v1) {
+                        canvasState.highestLineNumbers[k1] = v1;
+                    }
                 }
             }
         }
-    }
 
-    // Sync up remoteLines
-    canvasState.remoteLines = [...Object.values(allLines.lines)];
-    syncMyLines();
-});
+        // Sync up remoteLines
+        canvasState.remoteLines = [...Object.values(allLines.lines)];
+        syncMyLines();
+    });
 
 
 /**
@@ -247,6 +260,7 @@ export default Frame.connectWithSlice(brushSlice,
             <div className="controls-bar">
                 <ColorPicker />
                 <BrushRadiusPicker />
+                <ClearButton />
             </div>
             <div
                 className="canvas-container"

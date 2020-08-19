@@ -3,8 +3,10 @@ import Stomp from 'stompjs'
 
 const initCheckInterval = 500;
 
- const urlBase = "http://springwebsocketsexample2-env.eba-9wepzsai.eu-west-2.elasticbeanstalk.com";
-//const urlBase = "http://localhost:8080";
+// const urlBase = "http://springwebsocketsexample2-env.eba-9wepzsai.eu-west-2.elasticbeanstalk.com";
+const urlBase = "http://localhost:8080";
+const lineDest = "/app/canvas/line/";
+const clearDest = "/app/canvas/clear/";
 
 /**
  * Websocket connection state
@@ -28,7 +30,7 @@ var allLines = {
 };
 export const setOnLinesUpdatedCallback = callback => {
     linesUpdatedCallback = callback;
-    callback(allLines);
+    callback(allLines, false);
 }
 
 /**
@@ -44,7 +46,7 @@ export const sendStartLine = ({
     if (!connected) {
         return;
     }
-    stompClient.send("/app/canvas/" + canvasId, {}, JSON.stringify({
+    stompClient.send(lineDest + canvasId, {}, JSON.stringify({
         t: 's',
         n: lineNumber,
         c: brushColor,
@@ -65,7 +67,7 @@ export const sendLinePoints = ({
     if (!connected) {
         return;
     }
-    stompClient.send("/app/canvas/" + canvasId, {}, JSON.stringify({
+    stompClient.send(lineDest + canvasId, {}, JSON.stringify({
         t: 'c',
         n: lineNumber,
         i: pointsIndexStart,
@@ -83,10 +85,21 @@ export const sendFinishLine = ({
     if (!connected) {
         return;
     }
-    stompClient.send("/app/canvas/" + canvasId, {}, JSON.stringify({
+    stompClient.send(lineDest + canvasId, {}, JSON.stringify({
         t: 'f',
         n: lineNumber
     }));
+}
+
+
+/**
+ * Send a message to totally clear the canvas
+ */
+export const sendClear = () => {
+    if (!connected) {
+        return;
+    }
+    stompClient.send(clearDest + canvasId, {}, "");
 }
 
 const lineMessageToLine = l => ({
@@ -127,13 +140,13 @@ const processLinesMessage = msg => {
         }
         console.log("finished", msg);
     }
-    triggerLinesChangedCallback();
+    triggerLinesChangedCallback(false);
 }
 
 /**
  * Trigger the callback to draw all lines
  */
-const triggerLinesChangedCallback = () => linesUpdatedCallback && linesUpdatedCallback(allLines)
+const triggerLinesChangedCallback = (clearing) => linesUpdatedCallback && linesUpdatedCallback(allLines, clearing)
 
 /**
  * Try to connect the websocket, retry on failure
@@ -153,6 +166,15 @@ const connect = (_canvasId) => {
             stompClient.subscribe('/topic/canvas/' + canvasId, messageOutput => {
                 var body = JSON.parse(messageOutput.body);
                 processLinesMessage(body);
+            });
+
+            stompClient.subscribe('/topic/clear/' + canvasId, () => {
+                console.log("clearing canvas");
+                allLines = {
+                    lines: {},
+                    highestLineNumbers: {}
+                };
+                triggerLinesChangedCallback(true);
             });
 
             // Init request
@@ -180,7 +202,7 @@ const connect = (_canvasId) => {
                             allLines.highestLineNumbers[l.d] = l.f ? l.n + 1 : l.n;
                         }
                     });
-                triggerLinesChangedCallback();
+                triggerLinesChangedCallback(true);
             });
 
             // Queue another init attempt

@@ -52,18 +52,26 @@ $small-screen-reduction: 1.5;
 	}
 }
 
-.color-picker-container {
-	position: relative;
+@mixin button-height {
+	cursor: pointer;
 	display: inline-block;
+	height: $control-button-height;
+
+	@media (max-width: $small-screen) {
+		height: $control-button-height / $small-screen-reduction;
+	}
+}
+
+.color-picker-container {
+	@include button-height;
+	position: relative;
 
 	.color-swatch {
 		cursor: pointer;
 		width: 150px;
-		height: $control-button-height;
 		border-radius: $border-radius;
 
 		@media (max-width: $small-screen) {
-			height: $control-button-height / $small-screen-reduction;
 			width: 100px;
 		}
 
@@ -86,25 +94,45 @@ $small-screen-reduction: 1.5;
 	}
 }
 
-.brush-size-button {
-	cursor: pointer;
+.square-button {
+	@include button-height;
 	width: $control-button-height;
-	height: $control-button-height;
-	line-height: $control-button-height;
-	display: inline-block;
 	background-color: white;
 	border-radius: $border-radius;
 	text-align: center;
 	margin-left: 2em;
+	position: relative;
 
 	@media (max-width: $small-screen) {
 		margin-left: 1em;
 		width: $control-button-height / $small-screen-reduction;
-		height: $control-button-height / $small-screen-reduction;
 		line-height: $control-button-height / $small-screen-reduction;
 	}
+}
 
-	position: relative;
+.clear-button {
+	float: right;
+	& > svg {
+		overflow: hidden;
+		margin: auto;
+		position: absolute;
+		top: 0;
+		left: 0;
+		bottom: 0;
+		right: 0;
+
+		font-size: 2em;
+		@media (max-width: $small-screen) {
+			font-size: 1em;
+		}
+	}
+
+	&.clicked-once{
+		background-color: #ea2424;
+	}
+}
+
+.brush-size-button {
 	& > div {
 		overflow: hidden;
 		margin: auto;
@@ -118,6 +146,6 @@ $small-screen-reduction: 1.5;
 	}
 
 	&.brush-selected {
-		box-shadow: 0 0 0 1px black inset; 
+		box-shadow: 0 0 0 1px black inset;
 	}
 }
