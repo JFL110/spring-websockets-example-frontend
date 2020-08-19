@@ -4,7 +4,7 @@ import { faTrashAlt } from '@fortawesome/free-solid-svg-icons/faTrashAlt'
 import { sendClear } from './canvasSocket';
 import useOnClickOutside from './useOnClickOutside'
 
-export default ({ }) => {
+export default () => {
 
     const [clickedOnce, setClickedOnce] = useState(false);
     const onClick = () => {

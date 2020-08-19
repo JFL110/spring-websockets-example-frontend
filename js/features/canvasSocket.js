@@ -3,8 +3,9 @@ import Stomp from 'stompjs'
 
 const initCheckInterval = 500;
 
-// const urlBase = "http://springwebsocketsexample2-env.eba-9wepzsai.eu-west-2.elasticbeanstalk.com";
-const urlBase = "http://localhost:8080";
+const urlBase = "http://springwebsocketsexample2-env.eba-9wepzsai.eu-west-2.elasticbeanstalk.com";
+//const urlBase = "http://localhost:8080";
+
 const lineDest = "/app/canvas/line/";
 const clearDest = "/app/canvas/clear/";
 

@@ -12,7 +12,8 @@ export default Frame.connectWithSlice(brushSlice, ({
     const [open, setOpen] = useState(false);
 
     // Close the picker when clicked outside
-    useOnClickOutside(useRef(), e => {
+    const ref = useRef();
+    useOnClickOutside(ref, e => {
         if (e.target?.id != "color-swatch-click-area") {
             setOpen(false);
         }
