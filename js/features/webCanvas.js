@@ -161,7 +161,7 @@ setOnLinesUpdatedCallback(
                     width: width,
                     height: height
                 })
-                , false);
+                , true);
             canvasState.highestLineNumbers = { ...allLines.highestLineNumbers };
         } else {
             const newHighestLineNumbers = {};
@@ -286,7 +286,7 @@ export default
                             hideGrid
                             disabled={!ready}
                             hideInterface={!ready}
-                            onChange={ready ? finishLineInProgress : () => {}}
+                            onChange={ready ? finishLineInProgress : () => { }}
                         />
                         <CanvasDraw
                             className="others-canvas"
