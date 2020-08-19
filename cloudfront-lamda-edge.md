@@ -6,7 +6,7 @@ Path routing and caching is controlled by two Lambda@Edge functions:
 ```
 exports.handler = (event, context, callback) => {
     
-  const gzipPathSuffix = '.gzip';
+  const gzipPathSuffix = '.gz';
   const brPathSuffix = '.br';
 
   const { request } = event.Records[0].cf;
