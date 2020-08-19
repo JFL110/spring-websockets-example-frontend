@@ -1,8 +1,7 @@
 name: Node build
 
 on: 
-  release:
-    types: [push]
+  [push]
 
 jobs:
   build:
