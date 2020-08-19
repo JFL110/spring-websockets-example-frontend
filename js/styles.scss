@@ -5,7 +5,7 @@ $canvas-top-margin: 1em;
 $border-radius: 5px;
 $small-screen: 800px;
 $small-screen-reduction: 1.9;
-$min-inner-width: 4.3 + 5 * $control-button-height / $small-screen-reduction + 7em;
+$min-inner-width: 2.3 + 5 * $control-button-height / $small-screen-reduction + 7em;
 $max-canvas-width: 1000px;
 
 .canvas-container {
@@ -269,7 +269,7 @@ input {
 	position: relative;
 
 	@media (max-width: $small-screen) {
-		margin-left: 1em;
+		margin-left: 0.6em;
 		width: $control-button-height / $small-screen-reduction;
 	}
 }
