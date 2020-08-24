@@ -8,6 +8,7 @@ import App from './app'
 import { getStore, setStore } from './features/globalStore'
 import { routerMiddleware, connectRouter, ConnectedRouter } from 'connected-react-router'
 import { createBrowserHistory } from 'history'
+import { ToastProvider } from 'react-toast-notifications';
 
 import socketInitialLoadMiddleware from './features/initialLoadMiddleware'
 import canvasSlice from './features/canvasSlice'
@@ -39,7 +40,12 @@ setLoaded(() => {
   render(
     <Provider store={getStore()}>
       <ConnectedRouter history={history} >
-        <App />
+        <ToastProvider
+          autoDismiss
+          autoDismissTimeout={4000}
+          placement='bottom-center'>
+          <App />
+        </ToastProvider>
       </ConnectedRouter>
     </Provider>,
     document.getElementById('root')

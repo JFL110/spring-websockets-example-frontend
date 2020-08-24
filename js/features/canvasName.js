@@ -3,7 +3,7 @@ import Frame from './frame';
 import canvasSlice from './canvasSlice';
 import config from './config'
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons/faArrowRight'
+import { faShare } from '@fortawesome/free-solid-svg-icons/faShare'
 import useOnClickOutside from './useOnClickOutside'
 
 export default Frame.connectWithSlice(canvasSlice,
@@ -33,18 +33,19 @@ export default Frame.connectWithSlice(canvasSlice,
         return <React.Fragment>
             {/* Mobile */}
             <div className="square-button canvas-name-mobile-button" onClick={() => setModalOpen(true)}>
-                <FontAwesomeIcon icon={faArrowRight} className="go-button" />
+                <FontAwesomeIcon icon={faShare} className="go-button" />
             </div>
             {modalOpen && <div className="mobile-canvas-name-modal" >
                 <div>
                     <div id="modal-box" ref={modalBoxRef}>
+                        Canvas name:<br/>
                         <form onSubmit={onSubmit}>
                             <input
                                 type="text"
                                 value={"/" + (text ?? "")}
                                 onChange={e => stripSlashAndSet(e.target.value)}
                             />
-                            <FontAwesomeIcon icon={faArrowRight} className="go-button" onClick={go} />
+                            <FontAwesomeIcon icon={faShare} className="go-button" onClick={go} />
                         </form>
                     </div>
                 </div>
@@ -57,7 +58,7 @@ export default Frame.connectWithSlice(canvasSlice,
                         value={"/" + (text ?? "")}
                         onChange={e => stripSlashAndSet(e.target.value)}
                     />
-                    <FontAwesomeIcon icon={faArrowRight} className="go-button" onClick={go} />
+                    <FontAwesomeIcon icon={faShare} className="go-button" onClick={go} />
                 </form>
             </div>
         </React.Fragment>

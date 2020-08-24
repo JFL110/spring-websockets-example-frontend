@@ -4,9 +4,11 @@ $control-button-height: 4em;
 $canvas-top-margin: 1em;
 $border-radius: 5px;
 $small-screen: 800px;
+$very-small-screen: 500px;
 $small-screen-reduction: 1.9;
-$min-inner-width: 2.3 + 5 * $control-button-height / $small-screen-reduction + 7em;
+$min-inner-width: 2.3 + 3 * $control-button-height / $small-screen-reduction + 6em;
 $max-canvas-width: 1000px;
+$hide-url-width: 300px;
 
 .canvas-container {
 	$h: $main-top-margin * 2 + $control-button-height + $canvas-top-margin;
@@ -122,8 +124,6 @@ $max-canvas-width: 1000px;
 	}
 }
 
-$hide-url-width : 425px;
-
 .canvas-name-mobile-button {
 	@media (min-width: $hide-url-width) {
 		display: none !important;
@@ -149,7 +149,7 @@ $hide-url-width : 425px;
 			background-color: rgba(255, 255, 255, 0.8);
 			width: 60vw;
 			height: 8em;
-			line-height: 8em;
+			line-height: 4em; // Two lines
 			display: inline-block;
 			margin: auto;
 			position: absolute;
@@ -162,7 +162,7 @@ $hide-url-width : 425px;
 			padding-right: 1em;
 
 			input {
-				width : calc(60vw - 1em);
+				width: calc(60vw - 1.5em);
 				border-bottom: 2px solid rgba(10, 10, 10, 0.2);
 			}
 		}
@@ -184,7 +184,12 @@ $hide-url-width : 425px;
 	overflow: hidden;
 	@media (max-width: $small-screen) {
 		margin-left: 1em;
-		width: calc(100vw - #{$main-margin * 2 + 4 * $control-button-height / $small-screen-reduction + 4.5em + 7em});
+		width: calc(100vw - #{$main-margin * 2 + 4 * $control-button-height / $small-screen-reduction + 10em});
+	}
+
+	@media (max-width: $very-small-screen) {
+		margin-left: 1em;
+		width: calc(100vw - #{$main-margin * 2 + 1 * $control-button-height / $small-screen-reduction + 11em});
 	}
 
 	&:hover {
@@ -194,11 +199,13 @@ $hide-url-width : 425px;
 	}
 
 	input {
-		width: calc(100% - 3em);
+		width: calc(100% - 4em);
 		margin-left: 1em;
+		margin-right: 0.5em;
 		@media (max-width: $small-screen) {
-			width: calc(100% - 2em);
+			width: calc(100% - 2.75em);
 			margin-left: 0.5em;
+			margin-right: 0.25em;
 		}
 	}
 }
@@ -309,7 +316,27 @@ input {
 		border-radius: 50%;
 	}
 
+	&.mobile {
+		display: none;
+		@media (max-width: $very-small-screen) {
+			&.brush-selected {
+				display: inline-block;
+			}
+		}
+	}
+
+	&.desktop {
+		@media (max-width: $very-small-screen) {
+			display: none;
+		}
+	}
+
 	&.brush-selected {
 		box-shadow: 0 0 0 1px black inset;
 	}
+}
+
+// Fix for react-toast-notifications
+.react-toast-notifications__container {
+	overflow-y: hidden !important;
 }
