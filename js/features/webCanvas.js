@@ -276,6 +276,7 @@ export default
                     </div>
                     <div
                         className="canvas-container"
+			onTouchMove={digestCanvas}
                         onMouseMove={digestCanvas}
                     >
                         {!ready && <div className="canvas-disabled-overlay"> <div className="loader" /></div>}
