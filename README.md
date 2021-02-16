@@ -14,8 +14,5 @@ A front end to a Java Spring websockets application.
 - Navigate to the same address on another device or browser window.
 - See changes to the canvas made in (hopefully) lightning fast real-time.
 
-## Browser Support & Limitations
-- Works best on desktops - tested on Chrome and Firefox for Ubuntu.
-- Tested on Chrome for Android : receives updates in real-time, only sends messages on line completion. Possibly due to how onMouseOver events are handled.
-- Tested on Firefox for Android : not currently working
+## Limitations
 - To keep services running within the AWS free tier the backend capacity is limited.
