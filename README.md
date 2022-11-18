@@ -8,7 +8,7 @@ A front end to a Java Spring websockets application.
 ### More details can be found on the [backend repo](https://github.com/JFL110/spring-websockets-example).
 
 ## How to use
-- Navigate to the site at ```d1kzdlgex69htr.cloudfront.net/{your-canvas-name} ```.
+- Navigate to the site at ```d1kzdlgex69htr.cloudfront.net/{your-canvas-name}```.
 - Navigating to  ```/random``` will select a random canvas name.
 - Double tapping the bin icon to clear the canvas.
 - Navigate to the same address on another device or browser window.
