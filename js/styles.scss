@@ -63,7 +63,7 @@ $hide-url-width: 300px;
 		left: 0;
 		height: $banner-height;
 		line-height: $banner-height;
-		top: calc(100vh - #{$h $h+ $banner-height});
+		top: calc(100vh - #{$h + $banner-height});
 		z-index: 150;
 		padding-left: 1em;
 		padding-right: 1em;
